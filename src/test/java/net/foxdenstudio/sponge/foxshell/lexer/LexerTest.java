@@ -1,5 +1,7 @@
 package net.foxdenstudio.sponge.foxshell.lexer;
 
+import net.foxdenstudio.sponge.foxshell.lexer.tokens.SymbolToken;
+import net.foxdenstudio.sponge.foxshell.lexer.tokens.Token;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,8 +20,11 @@ public class LexerTest {
     @Test
     public void getNextToken() throws Exception {
         final Lexer lexer = Lexer.i();
-        lexer.set("\"This is a test\"");
-        System.out.println(lexer.getNextToken());
+        lexer.set("5+5 \"This is a test\"");
+        Token token;
+        while ((token = lexer.getNextToken()) != SymbolToken.EOF) {
+            System.out.println(token);
+        }
     }
 
 }

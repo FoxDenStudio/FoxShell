@@ -1,9 +1,6 @@
 package net.foxdenstudio.sponge.foxshell.lexer;
 
-import net.foxdenstudio.sponge.foxshell.lexer.tokens.OperatorToken;
-import net.foxdenstudio.sponge.foxshell.lexer.tokens.StringToken;
-import net.foxdenstudio.sponge.foxshell.lexer.tokens.SymbolToken;
-import net.foxdenstudio.sponge.foxshell.lexer.tokens.Token;
+import net.foxdenstudio.sponge.foxshell.lexer.tokens.*;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -51,6 +48,7 @@ public class Lexer {
         data.put("cause", cause);
 
 //        syntaxErrorCallback.fire(data);
+        System.exit(1);
     }
 
     private void advance() {
@@ -96,6 +94,8 @@ public class Lexer {
     public Token getNextToken() {
         while (this.currentCharacter != null) {
 
+            this.skipWhitespace();
+
             if (this.currentCharacter == '"') {
                 return this.string();
             }
@@ -103,10 +103,10 @@ public class Lexer {
             if (Character.isDigit(this.currentCharacter)) {
                 return this.number();
             }
-
-            if (Character.isLetter(this.currentCharacter)) {
-                return this.identification();
-            }
+//
+//            if (Character.isLetter(this.currentCharacter)) {
+//                return this.identification();
+//            }
 
 
             switch (this.currentCharacter) {
@@ -144,7 +144,7 @@ public class Lexer {
             this.skipWhitespace();
 
         }
-        return null;
+        return SymbolToken.EOF;
     }
 
     private Token identification() {
@@ -152,7 +152,25 @@ public class Lexer {
     }
 
     private Token number() {
-        return null;
+        String resultString = "";
+        while (this.currentCharacter != null && Character.isDigit(this.currentCharacter)) {
+            resultString += this.currentCharacter;
+            this.advance();
+        }
+
+        if (this.currentCharacter != null && this.currentCharacter == '.') {
+            resultString += this.currentCharacter;
+            this.advance();
+
+            while (this.currentCharacter != null && Character.isDigit(this.currentCharacter)) {
+                resultString += this.currentCharacter;
+                this.advance();
+            }
+
+            return new NumberToken(new Float(resultString));
+        } else {
+            return new NumberToken(new Integer(resultString));
+        }
     }
 
     @Nonnull
