@@ -2,7 +2,8 @@ package net.foxdenstudio.sponge.foxshell.lexer.tokens;
 
 import javax.annotation.Nonnull;
 
-public class Token {
+public abstract class Token {
+
     private final Token.Type tokenType;
 
     public Token(@Nonnull final Token.Type tokenType) {
@@ -24,6 +25,7 @@ public class Token {
         EOF(Devsi.CONTROL),
         START(Devsi.CONTROL),
         FINISH(Devsi.CONTROL),
+        ASSIGN(Devsi.CONTROL),
 
         VARIABLE(Devsi.CONTROL),
         IDENTIFICATION(Devsi.CONTROL),
@@ -33,6 +35,7 @@ public class Token {
         COMMA(Devsi.OTHER),
 
         FLOAT(Devsi.DATA),
+        STRING(Devsi.DATA),
 
         PLUS(Devsi.SECONDARY_OP),
         MINUS(Devsi.SECONDARY_OP),
@@ -74,5 +77,4 @@ public class Token {
             OTHER, DATA, CONTROL, PRIMARY_OP, SECONDARY_OP;
         }
     }
-
 }
