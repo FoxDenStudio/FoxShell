@@ -1,17 +1,21 @@
 package net.foxdenstudio.sponge.foxshell.lexer.tokens;
 
+import javax.annotation.Nonnull;
+
 public class Token {
     private final Token.Type tokenType;
 
-    public Token(final Token.Type tokenType) {
+    public Token(@Nonnull final Token.Type tokenType) {
         this.tokenType = tokenType;
     }
 
+    @Nonnull
     @Override
     public String toString() {
         return "{\"Token\":{}}";
     }
 
+    @Nonnull
     public Type getTokenType() {
         return this.tokenType;
     }
@@ -41,7 +45,7 @@ public class Token {
 
         public final Devsi devsi;
 
-        Type(final Devsi devsi) {
+        Type(@Nonnull final Devsi devsi) {
             this.devsi = devsi;
         }
 
@@ -53,6 +57,7 @@ public class Token {
             return this.devsi == Devsi.SECONDARY_OP;
         }
 
+        @Nonnull
         @Override
         public String toString() {
             return "{\"Symbols\":{" +
