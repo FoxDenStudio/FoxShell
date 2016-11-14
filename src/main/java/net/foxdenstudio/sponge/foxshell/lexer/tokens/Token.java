@@ -24,6 +24,7 @@ public abstract class Token {
     public enum Type {
         EOF(Devsi.CONTROL),
         START(Devsi.CONTROL),
+        START_SINGLE(Devsi.CONTROL),
         FINISH(Devsi.CONTROL),
         ASSIGN(Devsi.CONTROL),
 
@@ -33,6 +34,7 @@ public abstract class Token {
         RPAR(Devsi.OTHER),
         COLON(Devsi.OTHER),
         COMMA(Devsi.OTHER),
+        PERIOD(Devsi.OTHER),
 
         FLOAT(Devsi.DATA),
         STRING(Devsi.DATA),

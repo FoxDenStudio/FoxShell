@@ -20,11 +20,10 @@ public class LexerTest {
     @Test
     public void getNextToken() throws Exception {
         final Lexer lexer = Lexer.i();
-        lexer.set("5+5 \"This is a test\"");
+        lexer.set("region modify ${\"prefixExam_\" + vars.lastName} add handler true");
         Token token;
         while ((token = lexer.getNextToken()) != SymbolToken.EOF) {
             System.out.println(token);
         }
     }
-
 }

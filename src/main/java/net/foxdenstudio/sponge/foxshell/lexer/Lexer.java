@@ -4,7 +4,6 @@ import net.foxdenstudio.sponge.foxshell.lexer.tokens.*;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.HashMap;
 
 public class Lexer {
 
@@ -16,6 +15,7 @@ public class Lexer {
     private int position;
     private int currentLine;
     private int currentLinePosition;
+    private boolean single;
 
     private Lexer() {
         reset();
@@ -41,13 +41,17 @@ public class Lexer {
     }
 
     void syntaxError(@Nullable final String cause) {
-        final HashMap<String, Object> data = new HashMap<>();
-
-        data.put("current_line_position", this.currentLinePosition);
-        data.put("current_line", this.currentLine);
-        data.put("cause", cause);
-
-//        syntaxErrorCallback.fire(data);
+        final String stringBuilder = "\n" +
+                "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" + "\n" +
+                this.inputText + "\n" +
+                "\n" +
+                "Error at position: " + this.currentLinePosition + " on line: " + this.currentLine + "\n" +
+                "Cause: " + (cause == null ? "Unknown!" : cause) + "\n" +
+                "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" + "\n";
+        System.out.flush();
+        System.err.flush();
+        System.err.println(stringBuilder);
+        System.err.flush();
         System.exit(1);
     }
 
@@ -93,6 +97,13 @@ public class Lexer {
     @Nullable
     public Token getNextToken() {
         while (this.currentCharacter != null) {
+            if (this.single) {
+                if (Character.isWhitespace(this.currentCharacter)) {
+                    this.advance();
+                    this.single = false;
+                    return new SymbolToken(Token.Type.FINISH);
+                }
+            }
 
             this.skipWhitespace();
 
@@ -103,10 +114,10 @@ public class Lexer {
             if (Character.isDigit(this.currentCharacter)) {
                 return this.number();
             }
-//
-//            if (Character.isLetter(this.currentCharacter)) {
-//                return this.identification();
-//            }
+
+            if (Character.isLetter(this.currentCharacter)) {
+                return this.identification();
+            }
 
 
             switch (this.currentCharacter) {
@@ -138,17 +149,44 @@ public class Lexer {
                 case ')':
                     this.advance();
                     return new SymbolToken(Token.Type.RPAR);
+                case '$':
+                    this.advance();
+                    if (this.currentCharacter == '{') {
+                        this.advance();
+                        return new SymbolToken(Token.Type.START);
+                    } else {
+                        this.single = true;
+                        return new SymbolToken(Token.Type.START_SINGLE);
+                    }
+                case '}':
+                    this.advance();
+                    return new SymbolToken(Token.Type.FINISH);
+                case '.':
+                    this.advance();
+                    return new SymbolToken(Token.Type.PERIOD);
                 default:
                     this.syntaxError("Invalid operator!");
             }
             this.skipWhitespace();
 
         }
+        if (this.single) {
+            this.single = false;
+            return new SymbolToken(Token.Type.FINISH);
+        }
         return SymbolToken.EOF;
     }
 
     private Token identification() {
-        return null;
+        String resultString = "";
+        while (this.currentCharacter != null && Character.isLetterOrDigit(this.currentCharacter)) {
+            resultString += this.currentCharacter;
+            this.advance();
+        }
+
+        //TODO This should reference the map...
+        return new IdentificationToken(resultString);
+//        return RESERVERED_KEYWORDS.getOrDefault(resultString, new IdentificationToken(resultString));
     }
 
     private Token number() {
